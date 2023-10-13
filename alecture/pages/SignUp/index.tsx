@@ -7,23 +7,63 @@ import {
   Button,
   Header,
   Success,
+  Error,
 } from "./styles";
 import { Link } from "react-router-dom";
+import useInput from "@hooks/useInput";
+import axios from "axios";
 
 const SignUp = () => {
-  const [email] = useState("");
-  const [nickname] = useState("");
-  const [password] = useState("");
-  const [passwordCheck] = useState("");
-  const [mismatchError] = useState(false);
-  const [signUpError] = useState("");
-  const [signUpSuccess] = useState(false);
-  const onSubmit = useCallback(() => {}, []);
-  const onChangeEmail = useCallback(() => {}, []);
-  const onChangeNickname = useCallback(() => {}, []);
-  const onChangePassword = useCallback(() => {}, []);
-  const onChangePasswordCheck = useCallback(() => {}, []);
-  const Error = useState("");
+  const [email, onChangeEmail] = useInput("");
+  const [nickname, onChangeNickname] = useInput("");
+  const [password, , setPassword] = useInput("");
+  const [passwordCheck, , setPasswordCheck] = useInput("");
+  const [mismatchError, setMissmatchError] = useState(false);
+  const [signUpError, setSignupError] = useState("");
+  const [signUpSuccess, setSignupSuccess] = useState(false);
+  const onSubmit = useCallback(
+    // useCallback 자체가 이 함수를 캐싱해둬라 기억해둬라 그런 의미. 언제까지 ? deps의 값이 바뀔 때까지. 하나라도 바뀌면 이 함수를 새로 만들고 바뀌는게 없으면 이전 함수 계속 쓰고
+    (e) => {
+      e.preventDefault();
+      if (!mismatchError) {
+        console.log("Signup in server");
+        setSignupError(""); // 초기화 함수 비슷한 느낌
+        setSignupSuccess(false);
+        axios
+          .post("http://localhost:3095/api/users", {
+            email,
+            nickname,
+            password,
+          })
+          .then((response) => {
+            console.log(response);
+            setSignupSuccess(true);
+          })
+          .catch((error) => {
+            console.log(error.response);
+            setSignupError(error.response.data);
+          })
+          .finally(() => {});
+      }
+    },
+    [email, nickname, password, passwordCheck, mismatchError] // deps에 함수안에 쓰이는 state들 넣어 줘야 한다. 그래야 state가 업데이트 된다.
+  );
+
+  const onChangePassword = useCallback(
+    (e) => {
+      setPassword(e.target.value);
+      setMissmatchError(e.target.value !== passwordCheck);
+    },
+    [passwordCheck]
+  );
+
+  const onChangePasswordCheck = useCallback(
+    (e) => {
+      setPasswordCheck(e.target.value);
+      setMissmatchError(e.target.value !== password);
+    },
+    [password]
+  );
 
   return (
     <div id="container">
@@ -76,9 +116,9 @@ const SignUp = () => {
               onChange={onChangePasswordCheck}
             />
           </div>
-          {/*{mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}*/}
-          {/*{!nickname && <Error>닉네임을 입력해주세요.</Error>}*/}
-          {/*{signUpError && <Error>{signUpError}</Error>}*/}
+          {mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
+          {!nickname && <Error>닉네임을 입력해주세요.</Error>}
+          {signUpError && <Error>{signUpError}</Error>}
           {signUpSuccess && (
             <Success>회원가입되었습니다! 로그인해주세요.</Success>
           )}

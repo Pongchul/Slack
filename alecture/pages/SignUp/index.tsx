@@ -12,8 +12,15 @@ import {
 import { Link } from "react-router-dom";
 import useInput from "@hooks/useInput";
 import axios from "axios";
+import useSWR from "swr";
+import fetcher from "@utils/fetcher";
+import { Redirect } from "react-router";
 
 const SignUp = () => {
+  const { data, error, revalidate, mutate } = useSWR(
+    "http://localhost:3095/api/users",
+    fetcher
+  );
   const [email, onChangeEmail] = useInput("");
   const [nickname, onChangeNickname] = useInput("");
   const [password, , setPassword] = useInput("");
@@ -40,7 +47,7 @@ const SignUp = () => {
             setSignupSuccess(true);
           })
           .catch((error) => {
-            console.log(error.response);
+            console.log("<<<<<Error response>>>>>", error.response);
             setSignupError(error.response.data);
           })
           .finally(() => {});
@@ -64,6 +71,14 @@ const SignUp = () => {
     },
     [password]
   );
+
+  // if (data === undefined) {
+  //   return <div>로딩중...</div>;
+  // }
+
+  if (data) {
+    return <Redirect to="/workspace/sleact/channel/일반" />;
+  }
 
   return (
     <div id="container">

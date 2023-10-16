@@ -1,9 +1,9 @@
 import {
-  ChangeEvent,
   Dispatch,
   SetStateAction,
   useCallback,
   useState,
+  ChangeEvent,
 } from "react";
 
 type ReturnTypes<T> = [
@@ -11,12 +11,13 @@ type ReturnTypes<T> = [
   (e: ChangeEvent<HTMLInputElement>) => void,
   Dispatch<SetStateAction<T>>
 ];
+
 const useInput = <T>(initialData: T): ReturnTypes<T> => {
-  const [value, setvalue] = useState(initialData);
+  const [value, setValue] = useState(initialData);
   const handler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setvalue(e.target.value as unknown as T);
+    setValue(e.target.value as unknown as T);
   }, []);
-  return [value, handler, setvalue];
+  return [value, handler, setValue];
 };
 
 export default useInput;

@@ -51,7 +51,7 @@ const LogIn = () => {
   // }
 
   if (data) {
-    return <Redirect to="/workspace/channel" />;
+    return <Redirect to="/workspace/slecat/channel/일반" />;
   }
 
   return (

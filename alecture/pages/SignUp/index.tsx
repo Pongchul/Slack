@@ -17,10 +17,7 @@ import fetcher from "@utils/fetcher";
 import { Redirect } from "react-router";
 
 const SignUp = () => {
-  const { data, error, revalidate, mutate } = useSWR(
-    "http://localhost:3095/api/users",
-    fetcher
-  );
+  const { data, error, revalidate, mutate } = useSWR("/api/users", fetcher);
   const [email, onChangeEmail] = useInput("");
   const [nickname, onChangeNickname] = useInput("");
   const [password, , setPassword] = useInput("");
@@ -37,7 +34,7 @@ const SignUp = () => {
         setSignupError(""); // 초기화 함수 비슷한 느낌
         setSignupSuccess(false);
         axios
-          .post("http://localhost:3095/api/users", {
+          .post("/api/users", {
             email,
             nickname,
             password,

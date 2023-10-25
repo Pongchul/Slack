@@ -17,10 +17,7 @@ import useInput from "@hooks/useInput";
 import fetcher from "@utils/fetcher";
 
 const LogIn = () => {
-  const { data, error, revalidate, mutate } = useSWR(
-    "http://localhost:3095/api/users",
-    fetcher
-  );
+  const { data, error, revalidate, mutate } = useSWR("/api/users", fetcher);
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput("");
   const [password, onChangePassword] = useInput("");
@@ -30,7 +27,7 @@ const LogIn = () => {
       setLogInError(false);
       axios
         .post(
-          "http://localhost:3095/api/users/login",
+          "/api/users/login",
           { email, password },
           {
             withCredentials: true,
@@ -51,7 +48,7 @@ const LogIn = () => {
   // }
 
   if (data) {
-    return <Redirect to="/workspace/slecat/channel/일반" />;
+    return <Redirect to="/workspace/sleact/channel/일반" />;
   }
 
   return (

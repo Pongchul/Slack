@@ -1,5 +1,5 @@
-import { CloseModalButton, CreateModal } from "@components/Modal/styles";
-import React, { FC, useCallback } from "react";
+import { CloseModalButton, CreateModal } from '@components/Modal/styles';
+import React, { FC, useCallback } from 'react';
 
 interface Props {
   show: boolean;

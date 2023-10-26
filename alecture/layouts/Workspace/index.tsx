@@ -1,10 +1,11 @@
-import React, { useCallback, useState, VFC } from 'react';
-import useSWR from 'swr';
-import fetcher from '@utils/fetcher';
-import axios from 'axios';
-import gravatar from 'gravatar';
-import { Redirect, useParams } from 'react-router';
-import { Link, Route, Switch } from 'react-router-dom';
+import ChannelList from '@components/ChannelList';
+import DMList from '@components/DMList';
+import InviteChannelModal from '@components/InviteChannelModal';
+import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
+import Menu from '@components/Menu';
+import Modal from '@components/Modal';
+import useInput from '@hooks/useInput';
+import useSocket from '@hooks/useSocket';
 import {
   AddButton,
   Channels,
@@ -21,38 +22,56 @@ import {
   Workspaces,
   WorkspaceWrapper,
 } from '@layouts/Workspace/styles';
-import loadale from '@loadable/component';
-import Menu from '@components/Menu';
+import loadable from '@loadable/component';
+import { Button, Input, Label } from '@pages/SignUp/styles';
 import { IChannel, IUser } from '@typings/db';
-import Modal from '@components/Modal';
-import { Button, Form, Input, Label } from '@pages/SignUp/styles';
-import useInput from '@hooks/useInput';
+import fetcher from '@utils/fetcher';
+import axios from 'axios';
+import React, { VFC, useCallback, useState, useEffect } from 'react';
+import { Redirect, useParams } from 'react-router';
+import { Link, Route, Switch } from 'react-router-dom';
+import useSWR from 'swr';
+import gravatar from 'gravatar';
 import { toast } from 'react-toastify';
 import CreateChannelModal from '@components/CreateChannelModal';
-import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
-import InviteChannelModal from '@components/InviteChannelModal';
-import ChannelList from '@components/ChannelList';
-import DMList from '@components/DMList';
 
-const Channel = loadale(() => import('@pages/Channel'));
-const DirectMessage = loadale(() => import('@pages/DirectMessage'));
+const Channel = loadable(() => import('@pages/Channel'));
+const DirectMessage = loadable(() => import('@pages/DirectMessage'));
 
 const Workspace: VFC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
-  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
-  const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [showInviteWorkspaceModal, setShowInviteWorkspaceModal] = useState(false);
   const [showInviteChannelModal, setShowInviteChannelModal] = useState(false);
-  const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
+  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
+  const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
+  const [newWorkspace, onChangeNewWorkspace, setNewWorkpsace] = useInput('');
   const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
 
   const { workspace } = useParams<{ workspace: string }>();
-  const { data: userData, error, revalidate, mutate } = useSWR<IUser | false>('/api/users', fetcher);
-
+  const {
+    data: userData,
+    error,
+    revalidate,
+    mutate,
+  } = useSWR<IUser | false>('/api/users', fetcher, {
+    dedupingInterval: 2000, // 2초
+  });
   const { data: channelData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/channels` : null, fetcher);
-
   const { data: memberData } = useSWR<IUser[]>(userData ? `/api/workspaces/${workspace}/members` : null, fetcher);
+  const [socket, disconnect] = useSocket(workspace);
+
+  useEffect(() => {
+    if (channelData && userData && socket) {
+      console.log(socket);
+      socket.emit('login', { id: userData.id, channels: channelData.map((v) => v.id) });
+    }
+  }, [socket, channelData, userData]);
+  useEffect(() => {
+    return () => {
+      disconnect();
+    };
+  }, [workspace, disconnect]);
 
   const onLogout = useCallback(() => {
     axios
@@ -60,7 +79,7 @@ const Workspace: VFC = () => {
         withCredentials: true,
       })
       .then(() => {
-        revalidate();
+        mutate(false, false);
       });
   }, []);
 
@@ -96,7 +115,7 @@ const Workspace: VFC = () => {
         .then(() => {
           revalidate();
           setShowCreateWorkspaceModal(false);
-          setNewWorkspace('');
+          setNewWorkpsace('');
           setNewUrl('');
         })
         .catch((error) => {
@@ -127,8 +146,9 @@ const Workspace: VFC = () => {
   }, []);
 
   if (!userData) {
-    return <Redirect to={'/login'} />;
+    return <Redirect to="/login" />;
   }
+
   return (
     <div>
       <Header>
@@ -138,13 +158,7 @@ const Workspace: VFC = () => {
             {showUserMenu && (
               <Menu style={{ right: 0, top: 38 }} show={showUserMenu} onCloseModal={onCloseUserProfile}>
                 <ProfileModal>
-                  <img
-                    src={gravatar.url(userData.nickname, {
-                      s: '36px',
-                      d: 'retro',
-                    })}
-                    alt={userData.nickname}
-                  />
+                  <img src={gravatar.url(userData.nickname, { s: '36px', d: 'retro' })} alt={userData.nickname} />
                   <div>
                     <span id="profile-name">{userData.nickname}</span>
                     <span id="profile-active">Active</span>

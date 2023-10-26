@@ -1,5 +1,5 @@
-import React, { CSSProperties, FC, useCallback } from "react";
-import { CloseModalButton, CreateMenu } from "./styles";
+import React, { CSSProperties, FC, useCallback } from 'react';
+import { CloseModalButton, CreateMenu } from './styles';
 
 interface Props {
   show: boolean;
@@ -7,13 +7,7 @@ interface Props {
   style: CSSProperties;
   closeButton?: boolean;
 }
-const Menu: FC<Props> = ({
-  children,
-  style,
-  show,
-  onCloseModal,
-  closeButton,
-}) => {
+const Menu: FC<Props> = ({ children, style, show, onCloseModal, closeButton }) => {
   const stopPropagation = useCallback((e) => {
     e.stopPropagation();
   }, []);
@@ -23,9 +17,7 @@ const Menu: FC<Props> = ({
   return (
     <CreateMenu onClick={onCloseModal}>
       <div style={style} onClick={stopPropagation}>
-        {closeButton && (
-          <CloseModalButton onClick={onCloseModal}>&times;</CloseModalButton>
-        )}
+        {closeButton && <CloseModalButton onClick={onCloseModal}>&times;</CloseModalButton>}
         {children}
       </div>
     </CreateMenu>

@@ -1,4 +1,4 @@
-import styled from "@emotion/styled";
+import styled from '@emotion/styled';
 
 export const RightMenu = styled.div`
   float: right;
@@ -6,7 +6,7 @@ export const RightMenu = styled.div`
 
 export const Header = styled.header`
   height: 38px;
-  background: #350d36;
+  background: #19171d;
   color: #ffffff;
   box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.1);
   padding: 5px;
@@ -64,9 +64,9 @@ export const Workspaces = styled.div`
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  background: #3f0e40;
-  border-top: 1px solid rgb(82, 38, 83);
-  border-right: 1px solid rgb(82, 38, 83);
+  background: #19171d;
+  border-top: 1px solid rgb(29, 28, 29);
+  border-right: 1px solid rgb(29, 28, 29);
   vertical-align: top;
   text-align: center;
   padding: 15px 0 0;
@@ -76,7 +76,7 @@ export const Channels = styled.nav`
   width: 260px;
   display: inline-flex;
   flex-direction: column;
-  background: #3f0e40;
+  background: #1d1c1d;
   color: rgb(188, 171, 188);
   vertical-align: top;
   & a {
@@ -125,8 +125,8 @@ export const WorkspaceName = styled.button`
   border: none;
   width: 100%;
   text-align: left;
-  border-top: 1px solid rgb(82, 38, 83);
-  border-bottom: 1px solid rgb(82, 38, 83);
+  border-top: 1px solid rgb(29, 28, 29);
+  border-bottom: 1px solid rgb(29, 28, 29);
   font-weight: 900;
   font-size: 24px;
   background: transparent;
@@ -185,7 +185,7 @@ export const WorkspaceButton = styled.button`
   height: 40px;
   border-radius: 10px;
   background: white;
-  border: 3px solid #3f0e40;
+  border: 1px solid rgb(29, 28, 29);
   margin-bottom: 15px;
   font-size: 18px;
   font-weight: 700;
